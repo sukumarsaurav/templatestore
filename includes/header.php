@@ -639,5 +639,43 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Toggle dropdowns in the pre-header
+    const dropdownToggles = document.querySelectorAll('.pre-header .dropdown-toggle');
+    
+    dropdownToggles.forEach(toggle => {
+        toggle.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // Get the dropdown menu
+            const dropdownMenu = this.nextElementSibling;
+            
+            // Check if it's already open
+            const isOpen = dropdownMenu.style.display === 'block';
+            
+            // Close all dropdowns first
+            document.querySelectorAll('.pre-header .dropdown-menu').forEach(menu => {
+                menu.style.display = 'none';
+            });
+            
+            // Toggle this dropdown
+            if (!isOpen) {
+                dropdownMenu.style.display = 'block';
+            }
+        });
+    });
+    
+    // Close dropdowns when clicking outside
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.dropdown-toggle') && !e.target.closest('.dropdown-menu')) {
+            document.querySelectorAll('.pre-header .dropdown-menu').forEach(menu => {
+                menu.style.display = 'none';
+            });
+        }
+    });
+});
+</script>
 </body>
-</html> 
+</html>

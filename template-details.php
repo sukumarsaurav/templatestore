@@ -8,6 +8,12 @@ session_start();
 // Include common functions
 include_once 'includes/functions.php';
 
+// Include database connection
+include_once 'includes/database.php';
+
+// Initialize database connection
+$db = new Database();
+
 // Define additional CSS files to include
 $additionalCSS = ['assets/css/template-details.css'];
 
@@ -328,6 +334,90 @@ $template = [
         </div>
     </div>
 </section>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Gallery image functionality
+    const mainPreview = document.querySelector('.main-preview');
+    const galleryItems = document.querySelectorAll('.gallery-item img');
+    
+    galleryItems.forEach(item => {
+        item.addEventListener('click', function() {
+            // Update main preview with this image
+            const newSrc = this.getAttribute('src');
+            mainPreview.setAttribute('src', newSrc);
+            
+            // Add active class to this item and remove from others
+            galleryItems.forEach(img => img.parentElement.classList.remove('active'));
+            this.parentElement.classList.add('active');
+        });
+    });
+    
+    // Wishlist functionality
+    const wishlistBtn = document.querySelector('.wishlist-btn');
+    if (wishlistBtn) {
+        wishlistBtn.addEventListener('click', function() {
+            const templateId = this.getAttribute('data-id');
+            
+            // Toggle wishlist icon
+            const icon = this.querySelector('i');
+            if (icon.classList.contains('far')) {
+                icon.classList.remove('far');
+                icon.classList.add('fas');
+                this.innerHTML = '<i class="fas fa-heart"></i> Added to Wishlist';
+            } else {
+                icon.classList.remove('fas');
+                icon.classList.add('far');
+                this.innerHTML = '<i class="far fa-heart"></i> Add to Wishlist';
+            }
+            
+            // Send AJAX request to add/remove from wishlist (in a real implementation)
+            fetch('wishlist.php?action=toggle&id=' + templateId, {
+                method: 'POST'
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Wishlist updated:', data);
+            })
+            .catch(error => {
+                console.error('Error updating wishlist:', error);
+            });
+        });
+    }
+    
+    // Related template wishlist buttons
+    const relatedWishlistBtns = document.querySelectorAll('.template-wishlist-btn');
+    relatedWishlistBtns.forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            const templateId = this.getAttribute('data-id');
+            const icon = this.querySelector('i');
+            
+            // Toggle heart icon
+            if (icon.classList.contains('far')) {
+                icon.classList.remove('far');
+                icon.classList.add('fas');
+            } else {
+                icon.classList.remove('fas');
+                icon.classList.add('far');
+            }
+            
+            // Send AJAX request (in a real implementation)
+            fetch('wishlist.php?action=toggle&id=' + templateId, {
+                method: 'POST'
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Wishlist updated:', data);
+            })
+            .catch(error => {
+                console.error('Error updating wishlist:', error);
+            });
+        });
+    });
+});
+</script>
 
 <?php
 // Include footer

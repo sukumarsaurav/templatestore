@@ -2,7 +2,7 @@
 
 /* General Styles */
 .container {
-    max-width: 1200px;
+    max-width: 1600px;
     margin: 0 auto;
     padding: 0 20px;
 }
@@ -54,14 +54,17 @@
 
 .grid-cols-4 {
     grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
 }
 
 .grid-cols-3 {
     grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
 }
 
 .grid-cols-2 {
     grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
 }
 
 .grid-cols-1 {
@@ -310,10 +313,12 @@
     .grid-cols-3,
     .grid-cols-2 {
         grid-template-columns: 1fr;
+        gap: 20px;
     }
     
     .service-card {
         margin-bottom: 20px;
+        width: 100%;
     }
     
     .py-12 {
@@ -323,6 +328,12 @@
     
     .mt-4 {
         margin-top: 60px;
+    }
+    
+    .card {
+        width: 100%;
+        margin-left: 0;
+        margin-right: 0;
     }
 }
 
@@ -345,5 +356,9 @@
     
     .mt-4 {
         margin-top: 40px;
+    }
+    
+    .card-content {
+        padding: 20px;
     }
 } 
