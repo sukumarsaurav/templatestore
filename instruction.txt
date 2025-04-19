@@ -1,0 +1,140 @@
+Objective:
+Develop a fully-featured website template store using php mysql html css javascript no bootstrap can use aos for animation, offering a wide variety of categorized website templates with e-commerce functionality, additional services, and global accessibility enhancements.
+
+🎯 Core Features
+Template Categories
+The store should offer customizable templates across the following categories:
+
+Real Estate
+
+Jobs & Recruiters
+
+Matrimonial
+
+Medical & Doctors
+
+B2B
+
+E-commerce
+
+Banking & Finance
+
+Health & Beauty
+
+Food & Beverage
+
+School & Education
+
+Tours & Travel
+
+B2C
+
+Template Customization & Services
+
+Templates must be designed to be easily customizable by end users.
+
+Offer Content Customization Services (optional, with service fee).
+
+Provide Hosting Services as an optional add-on.
+
+E-commerce Integration
+
+Implement Razorpay for secure and seamless payments.
+
+Full cart and checkout flow with coupon support and order summaries.
+
+User Account Dashboard
+
+Profile management
+
+Order history and download access
+
+Wishlist functionality
+
+🖌️ UI Pages & Features
+Homepage
+Featured templates, popular categories, testimonials, and service highlights
+
+Templates Page
+Grid display with filters for category, price range, and features
+
+Template Detail Page
+Images, features, pricing, related templates, and purchase options
+
+Services Page
+Highlights of additional offerings like content customization and hosting
+
+Pricing Page
+Comparison table with different service tiers
+
+Cart Page
+Item list, quantity controls, coupon code, and summary
+
+Checkout Page
+Razorpay payment gateway integration
+
+Account Dashboard
+Manage profile, orders, downloads, and wishlist
+
+About Us Page
+Company story, team, values, and timeline
+
+Contact Page
+Form, contact info, and FAQ links
+
+Blog Page
+Posts with categories, featured post, and sidebar
+
+FAQ Page
+Searchable and categorized FAQ section
+
+🌍 Global Enhancements
+1. Dynamic Currency Conversion
+Supported Currencies: USD, INR, EUR, CAD
+
+Auto-detect currency by location
+
+Manual selection via dropdown
+
+Currency stored in localStorage
+
+Correct formatting with currency symbols
+
+2. Multi-language Support
+Supported Languages: English, Hindi, French, Spanish
+
+Auto-detect via browser
+
+Manual language toggle in the header
+
+All UI text translated using language keys
+
+Preferences stored in localStorage
+
+💡 Tech Stack
+Frontend: php mysql html css javascript no bootstrap can use aos for animation
+
+State Management: React Context API (for currency and language)
+
+Payments: Razorpay
+
+Color Theme:
+
+--yinmn-blue: #485696
+
+--platinum: #e7e7e7
+
+--sunset: #f9c784
+
+--pumpkin: #fc7a1e
+
+--golden-gate-bridge: #f24c00
+
+--text-dark: #333333
+
+--text-light: #666666
+
+--white: #ffffff
+
+--radius: 0.5rem
+
