@@ -1,8 +1,8 @@
 <?php
 // Set page title
-$pageTitle = "Templates Marketplace - NeoWebX Template Store";
-$pageDescription = "Browse our collection of professionally designed website templates for various industries and purposes.";
-$pageKeywords = "website templates, web templates, responsive templates, HTML templates, marketplace, premium templates";
+$pageTitle = "Templates Marketplace - neowebx.store | Ready-Made Website Templates";
+$pageDescription = "Browse our collection of professionally designed, ready-made website templates for various industries and purposes. Part of neowebx.com.";
+$pageKeywords = "website templates, web templates, responsive templates, HTML templates, marketplace, premium templates, ready-made templates, neowebx";
 
 // Additional CSS
 $additionalCSS = [
@@ -78,10 +78,11 @@ require_once 'includes/header.php';
 <!-- Page Header -->
 <section class="page-header">
     <div class="container">
-        <h1>Website Templates</h1>
+        <h1>Ready-Made Website Templates</h1>
         <div class="breadcrumb">
             <a href="index.php">Home</a> / <span>Templates</span>
         </div>
+        <p class="header-description">Find the perfect ready-made template for your business. All templates are fully responsive and easy to customize. Looking for custom web development? Visit <a href="https://neowebx.com" target="_blank" rel="dofollow">neowebx.com</a>.</p>
     </div>
 </section>
 

@@ -18,9 +18,19 @@ $currentPage = basename($_SERVER['PHP_SELF']);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="<?php echo isset($pageDescription) ? $pageDescription : 'NeoWebX Template Store - Professional Website Templates'; ?>">
-    <meta name="keywords" content="<?php echo isset($pageKeywords) ? $pageKeywords : 'website templates, web templates, responsive templates'; ?>">
-    <title><?php echo isset($pageTitle) ? $pageTitle : 'NeoWebX Template Store'; ?></title>
+    <meta name="description" content="<?php echo isset($pageDescription) ? $pageDescription : 'neowebx.store - Professional Ready-Made Website Templates'; ?>">
+    <meta name="keywords" content="<?php echo isset($pageKeywords) ? $pageKeywords : 'website templates, web templates, responsive templates, ready-made templates, neowebx'; ?>">
+    <meta property="og:title" content="<?php echo isset($pageTitle) ? $pageTitle : 'neowebx.store'; ?>">
+    <meta property="og:description" content="<?php echo isset($pageDescription) ? $pageDescription : 'neowebx.store - Professional Ready-Made Website Templates'; ?>">
+    <meta property="og:url" content="https://neowebx.store/">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="<?php echo isset($pageTitle) ? $pageTitle : 'neowebx.store'; ?>">
+    <meta name="twitter:description" content="<?php echo isset($pageDescription) ? $pageDescription : 'neowebx.store - Professional Ready-Made Website Templates'; ?>">
+    <meta name="author" content="neowebx.com">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://neowebx.store<?php echo $_SERVER['REQUEST_URI']; ?>">
+    <title><?php echo isset($pageTitle) ? $pageTitle : 'neowebx.store | Ready-Made Website Templates'; ?></title>
     
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="/favicon/favicon-96x96.png" sizes="96x96">
@@ -241,6 +251,7 @@ $currentPage = basename($_SERVER['PHP_SELF']);
                 <div class="header-contact-info">
                     <a href="tel:+11234567890"><i class="fas fa-phone-alt"></i> +1 (123) 456-7890</a>
                     <a href="mailto:info@neowebx.com"><i class="fas fa-envelope"></i> info@neowebx.com</a>
+                    <a href="https://neowebx.com" target="_blank" rel="dofollow"><i class="fas fa-globe"></i> Visit neowebx.com</a>
                 </div>
                 <div class="user-options">
                     <!-- Language Selector -->
@@ -335,7 +346,7 @@ $currentPage = basename($_SERVER['PHP_SELF']);
                 <!-- Logo -->
                 <div class="logo">
                     <a href="index.php">
-                        <img src="assets/images/logo.svg" alt="NeoWebX Templates">
+                        <img src="assets/images/logo.svg" alt="neowebx.store - Ready-Made Website Templates">
                         
                     </a>
                 </div>

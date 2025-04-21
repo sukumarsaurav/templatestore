@@ -14,13 +14,12 @@ include_once 'includes/database.php';
 // Initialize database connection
 $db = new Database();
 
-// Define additional CSS files to include
-$additionalCSS = ['assets/css/template-details.css'];
+// Get template ID or slug from URL
+$templateId = isset($_GET['id']) ? intval($_GET['id']) : 1;
+$templateSlug = isset($_GET['slug']) ? $_GET['slug'] : '';
 
-// Include header
-include 'includes/header.php';
-
-// Get template details (in production, this would come from a database)
+// In a real application, fetch the template details from database
+// For this example, we'll use static data
 $template = [
     'id' => 1,
     'name' => 'PropertyPro',
@@ -57,23 +56,34 @@ $template = [
     'rating' => 4.8,
     'reviews' => 24
 ];
+
+// Set page title and meta information
+$pageTitle = "{$template['name']} - Ready-Made {$template['category']} Template | neowebx.store";
+$pageDescription = "Download {$template['name']}, a premium {$template['category']} website template from neowebx.store. {$template['description']}";
+$pageKeywords = "template, {$template['name']}, {$template['category']}, " . implode(', ', $template['tags']) . ", ready-made template, neowebx";
+
+// Define additional CSS files to include
+$additionalCSS = ['assets/css/template-details.css'];
+
+// Include header
+include 'includes/header.php';
 ?>
 
 <!-- Template Details Header -->
 <section class="template-header section-padding">
     <div class="container">
         <div class="breadcrumb">
-            <a href="index.php">Home</a> / <a href="templates.php">Templates</a> / <span><?php echo $template['name']; ?></span>
+            <a href="index.php">Home</a> / <a href="templates-marketplace.php">Templates</a> / <span><?php echo $template['name']; ?></span>
         </div>
         <div class="template-header-content">
             <div class="row">
                 <div class="col-lg-7">
                     <div class="template-preview">
-                        <img src="<?php echo $template['image']; ?>" alt="<?php echo $template['name']; ?>" class="main-preview">
+                        <img src="<?php echo $template['image']; ?>" alt="<?php echo $template['name']; ?> - <?php echo $template['category']; ?> Template - neowebx.store" class="main-preview">
                         <div class="template-gallery">
                             <?php foreach ($template['gallery'] as $image): ?>
                                 <div class="gallery-item">
-                                    <img src="<?php echo $image; ?>" alt="<?php echo $template['name']; ?> preview">
+                                    <img src="<?php echo $image; ?>" alt="<?php echo $template['name']; ?> - <?php echo $template['category']; ?> Template Preview - neowebx.store">
                                 </div>
                             <?php endforeach; ?>
                         </div>
@@ -153,7 +163,7 @@ $template = [
                     <div class="description-content">
                         <p><?php echo $template['description']; ?></p>
                         <p>This template is perfect for real estate agencies, property management companies, and individual agents looking to showcase their property listings online. With a clean and professional design, PropertyPro helps you present your properties in the best light.</p>
-                        <p>The template comes with complete documentation and is easy to customize to match your brand needs.</p>
+                        <p>The template comes with complete documentation and is easy to customize to match your brand needs. Need custom modifications? Visit <a href="https://neowebx.com" target="_blank" rel="dofollow">neowebx.com</a> for professional web development services.</p>
                     </div>
                 </div>
                 

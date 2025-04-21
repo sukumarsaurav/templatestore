@@ -1,8 +1,8 @@
 <?php
 // Set page title
-$pageTitle = "Blog - NeoWebX Template Store";
-$pageDescription = "Stay updated with the latest trends, tips, and insights in web design and development";
-$pageKeywords = "blog, web design, web development, UI/UX, e-commerce, performance, trends";
+$pageTitle = "Blog - neowebx.store | Web Design & Development Resources";
+$pageDescription = "Stay updated with the latest trends, tips, and insights in web design and development. Resources from neowebx.store, part of neowebx.com.";
+$pageKeywords = "blog, web design, web development, UI/UX, e-commerce, performance, trends, templates, neowebx, ready-made templates";
 
 // Additional CSS
 $additionalCSS = [
@@ -27,7 +27,7 @@ require_once 'includes/header.php';
 <section class="blog-hero">
     <div class="container">
         <h1>Our Blog</h1>
-        <p>Stay updated with the latest trends, tips, and insights in web design and development</p>
+        <p>Stay updated with the latest trends, tips, and insights in web design and development. Visit <a href="https://neowebx.com" target="_blank" rel="dofollow">neowebx.com</a> for custom development services.</p>
     </div>
 </section>
 

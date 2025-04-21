@@ -13,9 +13,9 @@ include_once 'includes/database.php';
 $db = new Database();
 
 // Page metadata
-$pageTitle = "NeoWebX Template Store - Professional Website Templates";
-$pageDescription = "Browse our collection of professional, customizable website templates for various industries. Find the perfect template for your business needs.";
-$pageKeywords = "website templates, web templates, HTML templates, responsive templates, professional templates, business templates";
+$pageTitle = "neowebx.store | Ready-Made Professional Website Templates";
+$pageDescription = "Browse our collection of professional, ready-made, and customizable website templates for various industries. Find the perfect template for your business needs at neowebx.store, part of neowebx.com.";
+$pageKeywords = "website templates, web templates, HTML templates, responsive templates, professional templates, business templates, ready-made templates, neowebx";
 
 // Set default currency and language if not set
 if (!isset($_SESSION['currency'])) {
@@ -159,8 +159,8 @@ include_once 'includes/header.php';
 <section class="hero-section">
     <div class="container">
         <div class="hero-content" data-aos="fade-up">
-            <h1>Find the Perfect Template for Your Business</h1>
-            <p class="lead">Browse our collection of professionally designed, fully responsive website templates</p>
+            <h1>Find the Perfect Ready-Made Template for Your Business</h1>
+            <p class="lead">Browse our collection of professionally designed, fully responsive website templates at neowebx.store. Part of <a href="https://neowebx.com" target="_blank" rel="dofollow">neowebx.com</a></p>
             <div class="hero-search">
                 <form action="templates-marketplace.php" method="get">
                     <div class="search-container">

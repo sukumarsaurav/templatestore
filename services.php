@@ -1,8 +1,8 @@
 <?php
 // Set page title
-$pageTitle = "Services - NeoWebX Template Store";
-$pageDescription = "Enhance your website with our professional services. We offer a range of services to help you get the most out of your website template.";
-$pageKeywords = "website services, template customization, hosting services, technical support, custom development, web maintenance";
+$pageTitle = "Services - neowebx.store | Ready-Made Website Templates";
+$pageDescription = "Enhance your website with our professional services at neowebx.store. We offer a range of services to help you get the most out of your ready-made website template.";
+$pageKeywords = "website services, template customization, hosting services, technical support, custom development, web maintenance, neowebx, ready-made templates";
 
 // Additional CSS
 $additionalCSS = [
@@ -29,7 +29,7 @@ require_once 'includes/header.php';
             <h1>Our Services</h1>
             <p class="text-light">
                 Enhance your website with our professional services. We offer a range of services to help you get the most out
-                of your website template.
+                of your website template. For custom web development services, visit <a href="https://neowebx.com" target="_blank" rel="dofollow">neowebx.com</a>.
             </p>
         </div>
 
@@ -126,7 +126,7 @@ require_once 'includes/header.php';
                         </div>
                         <h3 class="service-title">Custom Development</h3>
                         <p class="service-description text-light">
-                            Custom features and functionality tailored to your specific business needs.
+                            Custom features and functionality tailored to your specific business needs. For more extensive development, visit <a href="https://neowebx.com" target="_blank" rel="dofollow">neowebx.com</a>.
                         </p>
                         <ul class="service-features">
                             <li>Custom functionality</li>

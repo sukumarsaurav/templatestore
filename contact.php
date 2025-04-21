@@ -12,6 +12,11 @@ include_once 'includes/functions.php';
 include_once 'includes/database.php';
 $db = new Database();
 
+// Page metadata
+$pageTitle = "Contact neowebx.store | Ready-Made Website Templates";
+$pageDescription = "Get in touch with our team at neowebx.store. We're here to help you find the perfect ready-made website template for your business.";
+$pageKeywords = "contact, website templates, neowebx.store, ready-made templates, support, neowebx";
+
 // Define additional CSS files to include
 $additionalCSS = ['assets/css/contact.css'];
 
@@ -36,7 +41,7 @@ include 'includes/header.php';
             <div class="col-lg-6">
                 <div class="contact-info">
                     <h2>Get in Touch</h2>
-                    <p>Have questions about our templates or services? We're here to help. Fill out the form or use our contact information below to reach us.</p>
+                    <p>Have questions about our templates or services? We're here to help. Fill out the form or use our contact information below to reach us. For custom web development services, please visit <a href="https://neowebx.com" target="_blank" rel="dofollow">neowebx.com</a>.</p>
                     
                     <div class="contact-methods">
                         <div class="contact-method">
@@ -66,8 +71,19 @@ include 'includes/header.php';
                             </div>
                             <div class="method-details">
                                 <h3>Email Address</h3>
-                                <p>support@templatehub.com</p>
+                                <p>support@neowebx.store</p>
                                 <p>We respond within 24 hours</p>
+                            </div>
+                        </div>
+                        
+                        <div class="contact-method">
+                            <div class="method-icon">
+                                <i class="fas fa-globe"></i>
+                            </div>
+                            <div class="method-details">
+                                <h3>Main Website</h3>
+                                <p><a href="https://neowebx.com" target="_blank" rel="dofollow">neowebx.com</a></p>
+                                <p>For custom web development</p>
                             </div>
                         </div>
                     </div>

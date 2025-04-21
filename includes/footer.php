@@ -16,13 +16,13 @@ if (!defined('STORE_PATH')) {
                     <!-- Company Info -->
                     <div class="footer-widget about-widget">
                         <div class="widget-title">
-                            <h4>About NeoWebX Templates</h4>
+                            <h4>About neowebx.store</h4>
                         </div>
                         <div class="widget-content">
                             <div class="footer-logo">
-                                <img src="assets/images/logo-light.svg" alt="NeoWebX Template Store">
+                                <img src="assets/images/logo-light.svg" alt="neowebx.store - Ready-Made Website Templates">
                             </div>
-                            <p>We provide high-quality, responsive website templates designed to help your business succeed online. All our templates are fully customizable and easy to use.</p>
+                            <p>We provide high-quality, responsive website templates designed to help your business succeed online. All our templates are fully customizable and easy to use. Visit our parent company <a href="https://neowebx.com" target="_blank" rel="dofollow">neowebx.com</a> for custom web development services.</p>
                             <div class="social-links">
                                 <a href="#" target="_blank" rel="noopener noreferrer"><i class="fab fa-facebook-f"></i></a>
                                 <a href="#" target="_blank" rel="noopener noreferrer"><i class="fab fa-twitter"></i></a>
@@ -46,6 +46,7 @@ if (!defined('STORE_PATH')) {
                                 <li><a href="about.php">About Us</a></li>
                                 <li><a href="contact.php">Contact Us</a></li>
                                 <li><a href="blog.php">Blog</a></li>
+                                <li><a href="https://neowebx.com" target="_blank" rel="dofollow">neowebx.com</a></li>
                             </ul>
                         </div>
                     </div>
@@ -87,6 +88,10 @@ if (!defined('STORE_PATH')) {
                                     <span><a href="mailto:templates@neowebx.com">templates@neowebx.com</a></span>
                                 </li>
                                 <li>
+                                    <i class="fas fa-globe"></i>
+                                    <span><a href="https://neowebx.com" target="_blank" rel="dofollow">Visit neowebx.com</a></span>
+                                </li>
+                                <li>
                                     <i class="fas fa-clock"></i>
                                     <span>Monday - Friday: 9am - 6pm</span>
                                 </li>
@@ -102,7 +107,7 @@ if (!defined('STORE_PATH')) {
             <div class="container">
                 <div class="bottom-content">
                     <div class="copyright">
-                        <p>&copy; <?php echo date('Y'); ?> NeoWebX Template Store. All Rights Reserved.</p>
+                        <p>&copy; <?php echo date('Y'); ?> neowebx.store. All Rights Reserved. Part of <a href="https://neowebx.com" target="_blank" rel="dofollow">neowebx.com</a></p>
                     </div>
                     <div class="footer-bottom-links">
                         <ul>

@@ -12,6 +12,11 @@ include_once 'includes/functions.php';
 include_once 'includes/database.php';
 $db = new Database();
 
+// Page metadata
+$pageTitle = "About neowebx.store | Ready-Made Website Templates";
+$pageDescription = "Learn about neowebx.store - your source for high-quality, ready-made website templates. Part of neowebx.com for complete web development solutions.";
+$pageKeywords = "about, website templates, neowebx.store, ready-made templates, web development, neowebx";
+
 // Define additional CSS files to include
 $additionalCSS = ['assets/css/about.css'];
 
@@ -36,9 +41,9 @@ include 'includes/header.php';
             <div class="col-lg-6">
                 <div class="about-content">
                     <h2>Who We Are</h2>
-                    <p class="lead">TemplateHub is a premier marketplace for high-quality, professionally designed website templates.</p>
-                    <p>Founded in 2018, we've helped thousands of businesses establish their online presence with beautiful, responsive website templates. Our mission is to make professional web design accessible to everyone, regardless of technical skill level.</p>
-                    <p>Our team consists of passionate designers, developers, and customer support specialists who are dedicated to creating exceptional templates and providing outstanding service to our customers.</p>
+                    <p class="lead">neowebx.store is a premier marketplace for high-quality, professionally designed website templates.</p>
+                    <p>As part of <a href="https://neowebx.com" target="_blank" rel="dofollow">neowebx.com</a>, we've helped thousands of businesses establish their online presence with beautiful, responsive website templates. Our mission is to make professional web design accessible to everyone, regardless of technical skill level.</p>
+                    <p>Our team consists of passionate designers, developers, and customer support specialists who are dedicated to creating exceptional templates and providing outstanding service to our customers. For custom web development services, visit our main site <a href="https://neowebx.com" target="_blank" rel="dofollow">neowebx.com</a>.</p>
                     
                     <div class="about-stats">
                         <div class="stat-item">
@@ -58,7 +63,7 @@ include 'includes/header.php';
             </div>
             <div class="col-lg-6">
                 <div class="about-image">
-                    <img src="assets/images/about/about-image.jpg" alt="About TemplateHub">
+                    <img src="assets/images/about/about-image.jpg" alt="About neowebx.store - Ready-Made Website Templates">
                 </div>
             </div>
         </div>
@@ -109,7 +114,7 @@ include 'includes/header.php';
     <div class="container">
         <div class="section-header">
             <h2>Meet Our Team</h2>
-            <p>The passionate people behind TemplateHub</p>
+            <p>The passionate people behind neowebx.store</p>
         </div>
         <div class="row">
             <div class="col-lg-3 col-md-6">
