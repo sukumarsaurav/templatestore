@@ -1,6 +1,6 @@
 <?php
 // Prevent direct access
-if (!defined('STORE_PATH')) {
+if (!defined('STORE_PATH') && !defined('ADMIN_PATH')) {
     exit('Direct access not permitted');
 }
 
@@ -19,6 +19,7 @@ class Database {
      */
     public function __construct() {
         try {
+            // Set timeout to avoid hanging
             $this->conn = new mysqli($this->host, $this->username, $this->password, $this->database);
             
             if ($this->conn->connect_error) {
@@ -31,15 +32,16 @@ class Database {
             // Log error instead of exposing details
             error_log("Database Connection Error: " . $e->getMessage());
             
-            // For development only:
+            // For development only, uncomment if needed:
             // echo "Connection Error: " . $e->getMessage();
+            $this->conn = null;
         }
     }
     
     /**
      * Get database connection
      * 
-     * @return mysqli The database connection
+     * @return mysqli|null The database connection or null if connection failed
      */
     public function getConnection() {
         return $this->conn;

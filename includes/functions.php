@@ -1,6 +1,6 @@
 <?php
 // Prevent direct access
-if (!defined('STORE_PATH')) {
+if (!defined('STORE_PATH') && !defined('ADMIN_PATH')) {
     exit('Direct access not permitted');
 }
 
