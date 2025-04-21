@@ -23,10 +23,13 @@ $currentPage = basename($_SERVER['PHP_SELF']);
     <title><?php echo isset($pageTitle) ? $pageTitle : 'NeoWebX Template Store'; ?></title>
     
     <!-- Favicon -->
-    <link rel="icon" type="image/png" href="../favicon/favicon-96x96.png" sizes="96x96">
-    <link rel="icon" type="image/svg+xml" href="../favicon/favicon.svg">
-    <link rel="shortcut icon" href="../favicon/favicon.ico">
-    <link rel="apple-touch-icon" sizes="180x180" href="../favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" href="/favicon/favicon-96x96.png" sizes="96x96">
+    <link rel="icon" type="image/svg+xml" href="/favicon/favicon.svg">
+    <link rel="shortcut icon" href="/favicon/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png">
+    <link rel="manifest" href="/favicon/site.webmanifest">
+    <meta name="theme-color" content="#ffffff">
+    <meta name="msapplication-TileColor" content="#ffffff">
     
     <!-- CSS -->
     <link rel="stylesheet" href="/assets/css/style.css">
