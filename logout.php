@@ -8,27 +8,27 @@ require_once 'includes/database.php';
 
 // Initialize database
 $db = new Database();
-$firebaseAuth = new FirebaseAuth();
 
 // Start or resume session
-if (!isset($_SESSION)) {
-    session_start();
-}
+session_start();
 
 // Clear all session variables
 $_SESSION = array();
 
-// If you want to completely destroy the session, uncomment these lines:
-// if (ini_get("session.use_cookies")) {
-//     $params = session_get_cookie_params();
-//     setcookie(session_name(), '', time() - 42000,
-//         $params["path"], $params["domain"],
-//         $params["secure"], $params["httponly"]
-//     );
-// }
+// Delete the remember me cookie if it exists
+if (isset($_COOKIE['remember_token'])) {
+    setcookie('remember_token', '', time() - 3600, '/');
+}
 
 // Destroy the session
 session_destroy();
+
+// Get redirect URL if set
+$redirect = isset($_GET['redirect']) ? $_GET['redirect'] : 'index.php';
+
+// Redirect to the specified page
+header('Location: ' . $redirect);
+exit();
 
 // Get redirect URL if set
 $redirect = isset($_GET['redirect']) ? $_GET['redirect'] : 'index.php';

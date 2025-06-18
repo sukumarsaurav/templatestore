@@ -54,12 +54,6 @@ $currentPage = basename($_SERVER['PHP_SELF']);
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css">
     
-    <!-- Firebase SDKs -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-    <script src="/assets/js/firebase-config.js"></script>
-    
     <!-- Additional CSS -->
     <?php if(isset($additionalCSS)): ?>
         <?php foreach($additionalCSS as $css): ?>
@@ -69,6 +63,64 @@ $currentPage = basename($_SERVER['PHP_SELF']);
 
     <!-- Script for dynamic language/currency preferences -->
     <script>
+    // User preferences functions
+    async function getUserPreferences() {
+        // Get preferences from localStorage or session
+        const language = localStorage.getItem('language') || '<?php echo $_SESSION['language']; ?>';
+        const currency = localStorage.getItem('currency') || '<?php echo $_SESSION['currency']; ?>';
+        
+        return {
+            preferredLanguage: language,
+            preferredCurrency: currency
+        };
+    }
+
+    async function updateUserPreferences(preferences) {
+        // Store in localStorage
+        if (preferences.preferredLanguage) {
+            localStorage.setItem('language', preferences.preferredLanguage);
+        }
+        if (preferences.preferredCurrency) {
+            localStorage.setItem('currency', preferences.preferredCurrency);
+        }
+        
+        // Update server-side preferences
+        try {
+            const response = await fetch('/api/preferences.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    action: 'update_preferences',
+                    language: preferences.preferredLanguage,
+                    currency: preferences.preferredCurrency
+                })
+            });
+            return await response.json();
+        } catch (error) {
+            console.error('Error updating preferences:', error);
+            return { success: false, error: 'Failed to update preferences' };
+        }
+    }
+
+    function updateLanguageDisplay(language) {
+        const languageSelector = document.querySelector('.language-selector .dropdown-toggle span');
+        if (languageSelector) {
+            const languages = <?php echo json_encode($langNames); ?>;
+            languageSelector.textContent = languages[language] || language;
+        }
+    }
+
+    function updateCurrencyDisplay(currency) {
+        const currencySelector = document.querySelector('.currency-selector .dropdown-toggle span');
+        if (currencySelector) {
+            const currencies = <?php echo json_encode($currencySymbols); ?>;
+            const symbol = currencies[currency] || '$';
+            currencySelector.textContent = `${symbol} ${currency}`;
+        }
+    }
+
     document.addEventListener('DOMContentLoaded', async function() {
         // Load user preferences
         const prefs = await getUserPreferences();
@@ -110,136 +162,6 @@ $currentPage = basename($_SERVER['PHP_SELF']);
                 window.location.reload();
             });
         });
-        
-        // Update display functions
-        function updateLanguageDisplay(lang) {
-            const languages = {
-                'en': 'English',
-                'hi': 'हिन्दी',
-                'fr': 'Français',
-                'es': 'Español'
-            };
-            
-            document.querySelector('.language-selector .dropdown-toggle span').textContent = languages[lang] || 'English';
-            
-            // Update active class
-            document.querySelectorAll('.language-selector .dropdown-menu a').forEach(link => {
-                const linkLang = link.getAttribute('href').split('=')[1];
-                if (linkLang === lang) {
-                    link.classList.add('active');
-                } else {
-                    link.classList.remove('active');
-                }
-            });
-        }
-        
-        function updateCurrencyDisplay(currency) {
-            const currencies = {
-                'USD': '$',
-                'EUR': '€',
-                'INR': '₹',
-                'CAD': 'C$'
-            };
-            
-            document.querySelector('.currency-selector .dropdown-toggle span').textContent = 
-                `${currencies[currency] || '$'} ${currency}`;
-            
-            // Update active class
-            document.querySelectorAll('.currency-selector .dropdown-menu a').forEach(link => {
-                const linkCurrency = link.getAttribute('href').split('=')[1];
-                if (linkCurrency === currency) {
-                    link.classList.add('active');
-                } else {
-                    link.classList.remove('active');
-                }
-            });
-        }
-        
-        // Setup auth state listener
-        firebase.auth().onAuthStateChanged(function(user) {
-            if (user) {
-                // User is signed in
-                sessionStorage.setItem('user_id', user.uid);
-                sessionStorage.setItem('user_email', user.email);
-                sessionStorage.setItem('user_name', user.displayName || user.email.split('@')[0]);
-                
-                // Update account icon area
-                updateUserInterface(true, user.displayName || user.email.split('@')[0]);
-            } else {
-                // User is signed out
-                sessionStorage.removeItem('user_id');
-                sessionStorage.removeItem('user_email');
-                sessionStorage.removeItem('user_name');
-                
-                // Update account icon area
-                updateUserInterface(false);
-            }
-        });
-        
-        function updateUserInterface(isLoggedIn, userName = '') {
-            const accountIconContainer = document.querySelector('.account-icon');
-            const mobileMenu = document.querySelector('.mobile-menu');
-            
-            if (isLoggedIn) {
-                accountIconContainer.innerHTML = `
-                    <button class="dropdown-toggle">
-                        <i class="fas fa-user"></i>
-                        <i class="fas fa-chevron-down"></i>
-                    </button>
-                    <div class="dropdown-menu">
-                        <div class="user-welcome">Hello, ${userName}</div>
-                        <a href="account.php">My Account</a>
-                        <a href="account.php?tab=orders">My Orders</a>
-                        <a href="account.php?tab=downloads">Downloads</a>
-                        <a href="account.php?tab=profile">Profile</a>
-                        <a href="#" id="logout-link">Logout</a>
-                    </div>
-                `;
-                
-                // Update mobile menu
-                let userMenuItems = '';
-                userMenuItems += `<li><a href="account.php">My Account</a></li>`;
-                userMenuItems += `<li><a href="#" id="mobile-logout-link">Logout</a></li>`;
-                
-                // Replace login/register with account/logout in mobile menu
-                const loginRegisterItem = Array.from(mobileMenu.querySelectorAll('li')).find(
-                    li => li.querySelector('a')?.textContent.includes('Login / Register')
-                );
-                
-                if (loginRegisterItem) {
-                    loginRegisterItem.outerHTML = userMenuItems;
-                }
-                
-                // Add logout event listener
-                document.getElementById('logout-link').addEventListener('click', function(e) {
-                    e.preventDefault();
-                    handleLogout().then(() => {
-                        window.location.href = 'index.php';
-                    });
-                });
-                
-                const mobileLogoutLink = document.getElementById('mobile-logout-link');
-                if (mobileLogoutLink) {
-                    mobileLogoutLink.addEventListener('click', function(e) {
-                        e.preventDefault();
-                        handleLogout().then(() => {
-                            window.location.href = 'index.php';
-                        });
-                    });
-                }
-            } else {
-                accountIconContainer.innerHTML = `<a href="login.php"><i class="fas fa-user"></i></a>`;
-                
-                // Make sure mobile menu has login/register
-                const logoutItem = Array.from(mobileMenu.querySelectorAll('li')).find(
-                    li => li.querySelector('a')?.textContent.includes('Logout')
-                );
-                
-                if (logoutItem) {
-                    logoutItem.outerHTML = `<li><a href="login.php">Login / Register</a></li>`;
-                }
-            }
-        }
     });
     </script>
 </head>
@@ -476,26 +398,29 @@ $currentPage = basename($_SERVER['PHP_SELF']);
                         </a>
                     </div>
                     
-                    <!-- Account Button with Firebase Integration -->
+                    <!-- Account Button with PHP Session Check -->
                     <div class="account-icon">
                         <button class="dropdown-toggle" id="accountDropdownToggle">
                             <i class="fas fa-user"></i>
                             <i class="fas fa-chevron-down"></i>
                         </button>
                         <div class="dropdown-menu" id="accountDropdownMenu">
-                            <!-- This content will be dynamically updated by the firebase auth state listener -->
-                            <div id="userSignedIn" style="display: none;">
-                                <div class="user-welcome">Hello, <span id="userName"></span></div>
-                                <a href="account.php">My Account</a>
-                                <a href="account.php?tab=orders">My Orders</a>
-                                <a href="account.php?tab=downloads">Downloads</a>
-                                <a href="account.php?tab=profile">Profile</a>
-                                <a href="#" id="logout-link">Logout</a>
-                            </div>
-                            <div id="userSignedOut">
-                                <a href="login.php">Login</a>
-                                <a href="register.php">Register</a>
-                            </div>
+                            <!-- This content will be dynamically updated by PHP session check -->
+                            <?php if (isset($_SESSION['user_id'])): ?>
+                                <div id="userSignedIn" style="display: block;">
+                                    <div class="user-welcome">Hello, <?php echo htmlspecialchars($_SESSION['first_name'] . ' ' . $_SESSION['last_name']); ?></div>
+                                    <a href="account.php">My Account</a>
+                                    <a href="account.php?tab=orders">My Orders</a>
+                                    <a href="account.php?tab=downloads">Downloads</a>
+                                    <a href="account.php?tab=profile">Profile</a>
+                                    <a href="logout.php">Logout</a>
+                                </div>
+                            <?php else: ?>
+                                <div id="userSignedOut">
+                                    <a href="login.php">Login</a>
+                                    <a href="register.php">Register</a>
+                                </div>
+                            <?php endif; ?>
                         </div>
                     </div>
                     
@@ -555,104 +480,20 @@ $currentPage = basename($_SERVER['PHP_SELF']);
             </li>
             <li><a href="wishlist.php">Wishlist <?php if ($wishlistCount > 0): ?>(<?php echo $wishlistCount; ?>)<?php endif; ?></a></li>
             <li><a href="cart.php">Cart <?php if ($cartCount > 0): ?>(<?php echo $cartCount; ?>)<?php endif; ?></a></li>
-            <!-- Authentication links will be dynamically updated by Firebase -->
-            <li id="mobileAuthLinks"><a href="login.php">Login / Register</a></li>
+            <!-- Authentication links will be dynamically updated by PHP session check -->
+            <li id="mobileAuthLinks">
+                <?php if (isset($_SESSION['user_id'])): ?>
+                    <a href="logout.php">Logout</a>
+                <?php else: ?>
+                    <a href="login.php">Login / Register</a>
+                <?php endif; ?>
+            </li>
         </ul>
     </div>
 
     
     <!-- Main Content Container -->
     <main class="main-content"> 
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Firebase auth state listener
-    firebase.auth().onAuthStateChanged(function(user) {
-        const userSignedIn = document.getElementById('userSignedIn');
-        const userSignedOut = document.getElementById('userSignedOut');
-        const userName = document.getElementById('userName');
-        const mobileAuthLinks = document.getElementById('mobileAuthLinks');
-        
-        if (user) {
-            // User is signed in
-            if (userSignedIn) userSignedIn.style.display = 'block';
-            if (userSignedOut) userSignedOut.style.display = 'none';
-            if (userName) userName.textContent = user.displayName || user.email.split('@')[0];
-            
-            // Update mobile menu
-            if (mobileAuthLinks) {
-                mobileAuthLinks.innerHTML = `
-                    <li><a href="account.php">My Account</a></li>
-                    <li><a href="#" id="mobile-logout-link">Logout</a></li>
-                `;
-                
-                // Add event listener to mobile logout link
-                const mobileLogoutLink = document.getElementById('mobile-logout-link');
-                if (mobileLogoutLink) {
-                    mobileLogoutLink.addEventListener('click', function(e) {
-                        e.preventDefault();
-                        firebase.auth().signOut().then(() => {
-                            window.location.href = 'index.php';
-                        }).catch((error) => {
-                            console.error('Sign out error:', error);
-                        });
-                    });
-                }
-            }
-            
-            // Add event listener to logout link
-            const logoutLink = document.getElementById('logout-link');
-            if (logoutLink) {
-                logoutLink.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    firebase.auth().signOut().then(() => {
-                        window.location.href = 'index.php';
-                    }).catch((error) => {
-                        console.error('Sign out error:', error);
-                    });
-                });
-            }
-            
-            // Store user ID in session via AJAX
-            fetch('api/auth.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    action: 'store_session',
-                    user_id: user.uid,
-                    email: user.email,
-                    display_name: user.displayName || ''
-                })
-            }).then(response => response.json())
-              .catch(error => console.error('Error storing session:', error));
-            
-        } else {
-            // User is signed out
-            if (userSignedIn) userSignedIn.style.display = 'none';
-            if (userSignedOut) userSignedOut.style.display = 'block';
-            
-            // Update mobile menu
-            if (mobileAuthLinks) {
-                mobileAuthLinks.innerHTML = `<li><a href="login.php">Login / Register</a></li>`;
-            }
-            
-            // Clear session via AJAX
-            fetch('api/auth.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    action: 'clear_session'
-                })
-            }).then(response => response.json())
-              .catch(error => console.error('Error clearing session:', error));
-        }
-    });
-});
-</script>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {

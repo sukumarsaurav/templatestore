@@ -1,66 +1,99 @@
 <?php
-// Prevent direct access
-if (!defined('STORE_PATH') && !defined('ADMIN_PATH')) {
-    exit('Direct access not permitted');
-}
-
 /**
- * Database connection class for NeoWebX Template Store
+ * Database Connection Handler for NeoWebX Template Store
  */
 class Database {
-    private $host = '193.203.184.121';
-    private $username = 'u911550082_neowebx';
-    private $password = 'nHR*GmF$0';
-    private $database = 'u911550082_neowebx';
     private $conn;
     
     /**
-     * Constructor - Connect to the database
+     * Constructor
      */
     public function __construct() {
-        try {
-            // Set timeout to avoid hanging
-            $this->conn = new mysqli($this->host, $this->username, $this->password, $this->database);
-            
-            if ($this->conn->connect_error) {
-                throw new Exception("Connection failed: " . $this->conn->connect_error);
-            }
-            
-            // Set character set
-            $this->conn->set_charset("utf8mb4");
-        } catch (Exception $e) {
-            // Log error instead of exposing details
-            error_log("Database Connection Error: " . $e->getMessage());
-            
-            // For development only, uncomment if needed:
-            // echo "Connection Error: " . $e->getMessage();
-            $this->conn = null;
+        $host = '193.203.184.121';
+        $username = 'u911550082_neowebx';
+        $password = 'nHR*GmF$0';
+        $database = 'u911550082_neowebx';
+        
+        // Create connection
+        $this->conn = new mysqli($host, $username, $password, $database);
+        
+        // Check connection
+        if ($this->conn->connect_error) {
+            die("Connection failed: " . $this->conn->connect_error);
         }
+        
+        // Set charset to utf8mb4
+        $this->conn->set_charset("utf8mb4");
     }
     
     /**
      * Get database connection
-     * 
-     * @return mysqli|null The database connection or null if connection failed
      */
     public function getConnection() {
         return $this->conn;
     }
     
     /**
-     * Execute a query
+     * Escape string for SQL query
+     */
+    public function escape($string) {
+        return $this->conn->real_escape_string($string);
+    }
+    
+    /**
+     * Begin a transaction
+     */
+    public function begin_transaction() {
+        return $this->conn->begin_transaction();
+    }
+    
+    /**
+     * Commit a transaction
+     */
+    public function commit() {
+        return $this->conn->commit();
+    }
+    
+    /**
+     * Rollback a transaction
+     */
+    public function rollback() {
+        return $this->conn->rollback();
+    }
+    
+    /**
+     * Get last insert ID
+     */
+    public function insert_id() {
+        return $this->conn->insert_id;
+    }
+    
+    /**
+     * Execute a prepared statement query
      * 
-     * @param string $query The SQL query
+     * @param string $query SQL query
      * @param array $params Parameters for prepared statement
      * @param string $types Types of parameters (i: integer, s: string, d: double, b: blob)
-     * @return mysqli_result|bool Result object or boolean
+     * @return mixed Result set for SELECT, boolean for other queries
      */
     public function query($query, $params = [], $types = '') {
         try {
+            // For simple queries without parameters
+            if (empty($params)) {
+                $result = $this->conn->query($query);
+                if ($result === false) {
+                    error_log("Query Error: " . $this->conn->error);
+                    return false;
+                }
+                return $result;
+            }
+            
+            // For prepared statements
             $stmt = $this->conn->prepare($query);
             
             if (!$stmt) {
-                throw new Exception("Query preparation failed: " . $this->conn->error);
+                error_log("Query preparation failed: " . $this->conn->error);
+                return false;
             }
             
             // Bind parameters if provided
@@ -69,19 +102,75 @@ class Database {
             }
             
             // Execute the statement
-            $stmt->execute();
+            if (!$stmt->execute()) {
+                error_log("Query execution failed: " . $stmt->error);
+                return false;
+            }
             
             // Get result for SELECT queries
             if (strpos(strtoupper($query), 'SELECT') === 0) {
-                return $stmt->get_result();
+                $result = $stmt->get_result();
+                $stmt->close();
+                return $result;
             }
             
-            // Return affected rows for other queries
-            return $stmt->affected_rows > 0;
+            // Get affected rows for other queries
+            $affected = $stmt->affected_rows;
+            $stmt->close();
+            return $affected > 0;
+            
         } catch (Exception $e) {
-            error_log("Query Error: " . $e->getMessage());
+            error_log("Database Error: " . $e->getMessage());
             return false;
         }
+    }
+    
+    /**
+     * Execute a query and fetch all results
+     * 
+     * @param string $query SQL query
+     * @param array $params Parameters for prepared statement
+     * @param string $types Types of parameters
+     * @return array|false Array of results or false on failure
+     */
+    public function fetchAll($query, $params = [], $types = '') {
+        $result = $this->query($query, $params, $types);
+        if ($result === false) {
+            return false;
+        }
+        return $result->fetch_all(MYSQLI_ASSOC);
+    }
+    
+    /**
+     * Execute a query and fetch a single row
+     * 
+     * @param string $query SQL query
+     * @param array $params Parameters for prepared statement
+     * @param string $types Types of parameters
+     * @return array|false Array with row data or false on failure
+     */
+    public function fetchOne($query, $params = [], $types = '') {
+        $result = $this->query($query, $params, $types);
+        if ($result === false) {
+            return false;
+        }
+        return $result->fetch_assoc();
+    }
+    
+    /**
+     * Execute a query and fetch a single value
+     * 
+     * @param string $query SQL query
+     * @param array $params Parameters for prepared statement
+     * @param string $types Types of parameters
+     * @return mixed|false The value or false on failure
+     */
+    public function fetchValue($query, $params = [], $types = '') {
+        $result = $this->fetchOne($query, $params, $types);
+        if ($result === false) {
+            return false;
+        }
+        return array_values($result)[0];
     }
     
     /**
@@ -91,44 +180,5 @@ class Database {
         if ($this->conn) {
             $this->conn->close();
         }
-    }
-}
-
-/**
- * Firebase Authentication Handler for NeoWebX Template Store
- */
-class FirebaseAuth {
-    private $apiKey;
-    private $projectId;
-    
-    /**
-     * Constructor
-     */
-    public function __construct() {
-        $this->apiKey = 'YOUR_FIREBASE_API_KEY';
-        $this->projectId = 'YOUR_FIREBASE_PROJECT_ID';
-    }
-    
-    /**
-     * Initialize Firebase JS SDK in the frontend
-     * 
-     * @return string HTML code to initialize Firebase
-     */
-    public function initFirebaseJS() {
-        return '<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-                <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-                <script>
-                    const firebaseConfig = {
-                        apiKey: "' . $this->apiKey . '",
-                        projectId: "' . $this->projectId . '",
-                        authDomain: "' . $this->projectId . '.firebaseapp.com",
-                        storageBucket: "' . $this->projectId . '.appspot.com",
-                        messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-                        appId: "YOUR_APP_ID"
-                    };
-                    
-                    // Initialize Firebase
-                    firebase.initializeApp(firebaseConfig);
-                </script>';
     }
 } 

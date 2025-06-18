@@ -217,9 +217,7 @@ include_once 'includes/header.php';
                 <div class="template-card" data-aos="fade-up">
                     <div class="template-image">
                         <img src="<?php echo $template['image']; ?>" alt="<?php echo $template['name']; ?> Template">
-                        <?php if ($template['is_popular']): ?>
-                            <div class="template-badge">Popular</div>
-                        <?php elseif ($template['sale_price']): ?>
+                        <?php if ($template['sale_price']): ?>
                             <div class="template-badge sale">Sale</div>
                         <?php endif; ?>
                     </div>

@@ -5,6 +5,11 @@ define('STORE_PATH', true);
 // Initialize session
 session_start();
 
+// Set default currency if not set
+if (!isset($_SESSION['currency'])) {
+    $_SESSION['currency'] = 'USD';
+}
+
 // Include common functions
 include_once 'includes/functions.php';
 

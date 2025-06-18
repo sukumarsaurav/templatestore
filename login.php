@@ -2,13 +2,125 @@
 // Define base path
 define('STORE_PATH', dirname(__FILE__));
 
+// Enable error reporting for debugging
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
+// Start output buffering to catch any unexpected output
+ob_start();
+
 // Include common functions and database
 require_once 'includes/functions.php';
 require_once 'includes/database.php';
 
 // Initialize database connection
 $db = new Database();
-$firebaseAuth = new FirebaseAuth();
+
+// Start session
+session_start();
+
+// Log request data
+error_log("Login.php - Request Method: " . $_SERVER['REQUEST_METHOD']);
+error_log("Login.php - POST data: " . print_r($_POST, true));
+
+try {
+    // If already logged in, redirect to appropriate page
+    if (isset($_SESSION['user_id'])) {
+        $redirect = isset($_GET['redirect']) ? $_GET['redirect'] : 'index.php';
+        header('Location: ' . $redirect);
+        exit();
+    }
+
+    // Handle login form submission
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
+        header('Content-Type: application/json');
+        ob_clean(); // Clear any previous output
+        
+        if ($_POST['action'] === 'login') {
+            error_log("Login.php - Processing login action");
+            
+            $email = $db->escape($_POST['email']);
+            $password = $_POST['password'];
+            
+            error_log("Login.php - Attempting login for email: " . $email);
+            
+            // Get user from database
+            $result = $db->query("SELECT * FROM users WHERE email = '$email' AND is_active = 1 LIMIT 1");
+            
+            if ($result && $result->num_rows > 0) {
+                $user = $result->fetch_assoc();
+                error_log("Login.php - User found with ID: " . $user['user_id']);
+                
+                // Verify password
+                if (password_verify($password, $user['password'])) {
+                    error_log("Login.php - Password verified successfully");
+                    
+                    // Set session variables
+                    $_SESSION['user_id'] = $user['user_id'];
+                    $_SESSION['email'] = $user['email'];
+                    $_SESSION['role'] = $user['role'];
+                    $_SESSION['first_name'] = $user['first_name'];
+                    $_SESSION['last_name'] = $user['last_name'];
+                    
+                    // Update last login
+                    $db->query("UPDATE users SET last_login = CURRENT_TIMESTAMP WHERE user_id = {$user['user_id']}");
+                    
+                    // Set remember me cookie if requested
+                    if (isset($_POST['remember']) && $_POST['remember'] == 1) {
+                        $token = bin2hex(random_bytes(32));
+                        $expiry = time() + (30 * 24 * 60 * 60); // 30 days
+                        
+                        $db->query("UPDATE users SET remember_token = '$token' WHERE user_id = {$user['user_id']}");
+                        setcookie('remember_token', $token, $expiry, '/', '', true, true);
+                        error_log("Login.php - Remember me token set");
+                    }
+                    
+                    // Return success response for AJAX
+                    echo json_encode([
+                        'success' => true,
+                        'redirect' => isset($_GET['redirect']) ? $_GET['redirect'] : 'index.php'
+                    ]);
+                    exit();
+                } else {
+                    error_log("Login.php - Password verification failed");
+                }
+            } else {
+                error_log("Login.php - No user found with email: " . $email);
+            }
+            
+            // Return error response for AJAX
+            echo json_encode([
+                'success' => false,
+                'message' => 'Invalid email or password'
+            ]);
+            exit();
+        }
+    }
+
+} catch (Exception $e) {
+    error_log("Login.php - Error: " . $e->getMessage());
+    error_log("Login.php - Stack trace: " . $e->getTraceAsString());
+    
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        header('Content-Type: application/json');
+        echo json_encode([
+            'success' => false,
+            'message' => 'An error occurred',
+            'debug' => [
+                'error' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine()
+            ]
+        ]);
+        exit();
+    }
+} finally {
+    // If this is not a POST request, or if we haven't exited yet, continue with page rendering
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        // End output buffering for non-POST requests
+        ob_end_clean();
+    }
+}
 
 // Set page title and meta data
 $pageTitle = "Login & Register - NeoWebX Template Store";
@@ -24,9 +136,6 @@ $additionalCSS = [
 $additionalScripts = [
     "assets/js/auth.js"
 ];
-
-// Get redirect URL if set
-$redirect = isset($_GET['redirect']) ? $_GET['redirect'] : 'index.php';
 
 // Include header
 require_once 'includes/header.php';
@@ -75,7 +184,7 @@ require_once 'includes/header.php';
                     <div class="form-actions">
                         <div class="remember-forgot">
                             <div class="remember-me">
-                                <input type="checkbox" id="rememberMe" name="remember">
+                                <input type="checkbox" id="rememberMe" name="remember" value="1">
                                 <label for="rememberMe">Remember me</label>
                             </div>
                             <a href="forgot-password.php" class="forgot-password">Forgot Password?</a>
@@ -84,21 +193,6 @@ require_once 'includes/header.php';
                         <button type="submit" class="btn-primary auth-btn">Login to Your Account</button>
                     </div>
                 </form>
-                
-                <div class="auth-divider">
-                    <span>or continue with</span>
-                </div>
-                
-                <div class="social-auth">
-                    <button type="button" id="googleLoginBtn" class="social-btn google-btn">
-                        <img src="assets/images/icons/google.svg" alt="Google">
-                        <span>Google</span>
-                    </button>
-                    <button type="button" id="facebookLoginBtn" class="social-btn facebook-btn">
-                        <img src="assets/images/icons/facebook.svg" alt="Facebook">
-                        <span>Facebook</span>
-                    </button>
-                </div>
             </div>
             
             <!-- Register Form -->
@@ -159,41 +253,18 @@ require_once 'includes/header.php';
                     <div class="form-group">
                         <div class="checkbox-group">
                             <input type="checkbox" id="newsletterOpt" name="newsletter_opt_in">
-                            <label for="newsletterOpt">Subscribe to our newsletter for updates on new templates and offers</label>
+                            <label for="newsletterOpt">Subscribe to our newsletter for updates and offers</label>
                         </div>
                     </div>
                     
                     <button type="submit" class="btn-primary auth-btn">Create Account</button>
                 </form>
-                
-                <div class="auth-divider">
-                    <span>or sign up with</span>
-                </div>
-                
-                <div class="social-auth">
-                    <button type="button" id="googleRegisterBtn" class="social-btn google-btn">
-                        <img src="assets/images/icons/google.svg" alt="Google">
-                        <span>Google</span>
-                    </button>
-                    <button type="button" id="facebookRegisterBtn" class="social-btn facebook-btn">
-                        <img src="assets/images/icons/facebook.svg" alt="Facebook">
-                        <span>Facebook</span>
-                    </button>
-                </div>
             </div>
         </div>
     </div>
 </section>
 
-<script>
-// Pass redirect URL to client-side script
-const redirectUrl = "<?php echo htmlspecialchars($redirect); ?>";
-</script>
-
-<!-- Firebase Authentication Code -->
-<?php echo $firebaseAuth->initFirebaseJS(); ?>
-
 <?php
 // Include footer
 require_once 'includes/footer.php';
-?> 
+?>
