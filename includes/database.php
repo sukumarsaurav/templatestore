@@ -9,10 +9,10 @@ class Database {
      * Constructor
      */
     public function __construct() {
-        $host = '193.203.184.121';
-        $username = 'u911550082_neowebx';
-        $password = 'nHR*GmF$0';
-        $database = 'u911550082_neowebx';
+        $host = 'localhost';
+        $username = 'u277468165_neowebxstore';
+        $password = 'Milk@sdk14';
+        $database = 'u277468165_neowebxstore';
         
         // Create connection
         $this->conn = new mysqli($host, $username, $password, $database);
