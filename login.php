@@ -75,10 +75,18 @@ try {
                         error_log("Login.php - Remember me token set");
                     }
                     
+                    // Determine redirect based on user role
+                    $redirect = 'index.php';
+                    if ($user['role'] === 'admin') {
+                        $redirect = 'admin/index.php';
+                    } else if (isset($_GET['redirect'])) {
+                        $redirect = $_GET['redirect'];
+                    }
+                    
                     // Return success response for AJAX
                     echo json_encode([
                         'success' => true,
-                        'redirect' => isset($_GET['redirect']) ? $_GET['redirect'] : 'index.php'
+                        'redirect' => $redirect
                     ]);
                     exit();
                 } else {

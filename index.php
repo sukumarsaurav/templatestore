@@ -35,121 +35,169 @@ if (!isset($_SESSION['wishlist'])) {
     $_SESSION['wishlist'] = [];
 }
 
-// Featured templates
-$featuredTemplates = [
-    [
-        'id' => 1,
-        'name' => 'Estate Pro',
-        'category' => 'Real Estate',
-        'price' => 49.99,
-        'sale_price' => 39.99,
-        'image' => 'assets/images/templates/real-estate-1.jpg',
-        'tags' => ['responsive', 'modern', 'property listing']
-    ],
-    [
-        'id' => 2,
-        'name' => 'MediCare',
-        'category' => 'Medical & Doctors',
-        'price' => 59.99,
-        'sale_price' => null,
-        'image' => 'assets/images/templates/medical-1.jpg',
-        'tags' => ['healthcare', 'appointment', 'clinic']
-    ],
-    [
-        'id' => 3,
-        'name' => 'ShopMaster',
-        'category' => 'E-commerce',
-        'price' => 69.99,
-        'sale_price' => 54.99,
-        'image' => 'assets/images/templates/ecommerce-1.jpg',
-        'tags' => ['shop', 'online store', 'cart']
-    ],
-    [
-        'id' => 4,
-        'name' => 'EduLearn',
-        'category' => 'School & Education',
-        'price' => 44.99,
-        'sale_price' => null,
-        'image' => 'assets/images/templates/education-1.jpg',
-        'tags' => ['learning', 'courses', 'university']
-    ]
-];
+// Get featured templates from database
+$featuredTemplatesQuery = "SELECT t.template_id, t.template_name, t.base_price, t.discount_price, 
+                          t.thumbnail, ct.category_name, t.template_slug
+                          FROM templates t
+                          LEFT JOIN categories c ON t.category_id = c.category_id
+                          LEFT JOIN category_translations ct ON c.category_id = ct.category_id AND ct.language_code = 'en'
+                          WHERE t.is_featured = 1 AND t.is_active = 1
+                          ORDER BY t.created_at DESC
+                          LIMIT 4";
+$featuredTemplatesResult = $db->query($featuredTemplatesQuery);
 
-// Template categories
-$categories = [
-    [
-        'id' => 'real-estate',
-        'name' => 'Real Estate',
-        'icon' => 'fas fa-home',
-        'count' => 12
-    ],
-    [
-        'id' => 'jobs-recruiters',
-        'name' => 'Jobs & Recruiters',
-        'icon' => 'fas fa-briefcase',
-        'count' => 8
-    ],
-    [
-        'id' => 'matrimonial',
-        'name' => 'Matrimonial',
-        'icon' => 'fas fa-heart',
-        'count' => 6
-    ],
-    [
-        'id' => 'medical-doctors',
-        'name' => 'Medical & Doctors',
-        'icon' => 'fas fa-stethoscope',
-        'count' => 10
-    ],
-    [
-        'id' => 'b2b',
-        'name' => 'B2B',
-        'icon' => 'fas fa-handshake',
-        'count' => 7
-    ],
-    [
-        'id' => 'ecommerce',
-        'name' => 'E-commerce',
-        'icon' => 'fas fa-shopping-cart',
-        'count' => 15
-    ],
-    [
-        'id' => 'banking-finance',
-        'name' => 'Banking & Finance',
-        'icon' => 'fas fa-university',
-        'count' => 9
-    ],
-    [
-        'id' => 'health-beauty',
-        'name' => 'Health & Beauty',
-        'icon' => 'fas fa-spa',
-        'count' => 8
-    ],
-    [
-        'id' => 'food-beverage',
-        'name' => 'Food & Beverage',
-        'icon' => 'fas fa-utensils',
-        'count' => 11
-    ],
-    [
-        'id' => 'education',
-        'name' => 'School & Education',
-        'icon' => 'fas fa-graduation-cap',
-        'count' => 13
-    ],
-    [
-        'id' => 'tours-travel',
-        'name' => 'Tours & Travel',
-        'icon' => 'fas fa-plane',
-        'count' => 10
-    ],
-    [
-        'id' => 'b2c',
-        'name' => 'B2C',
-        'icon' => 'fas fa-store',
-        'count' => 9
-    ]
-];
+// Prepare featured templates array
+$featuredTemplates = [];
+while ($template = $featuredTemplatesResult->fetch_assoc()) {
+    $featuredTemplates[] = [
+        'id' => $template['template_id'],
+        'name' => $template['template_name'],
+        'category' => $template['category_name'],
+        'price' => $template['base_price'],
+        'sale_price' => $template['discount_price'],
+        'image' => $template['thumbnail'] ?: 'assets/images/templates/placeholder.jpg',
+        'slug' => $template['template_slug']
+    ];
+}
+
+// If no featured templates found, use some defaults
+if (empty($featuredTemplates)) {
+    $featuredTemplates = [
+        [
+            'id' => 1,
+            'name' => 'Estate Pro',
+            'category' => 'Real Estate',
+            'price' => 49.99,
+            'sale_price' => 39.99,
+            'image' => 'assets/images/templates/real-estate-1.jpg',
+            'slug' => 'estate-pro'
+        ],
+        [
+            'id' => 2,
+            'name' => 'MediCare',
+            'category' => 'Medical & Doctors',
+            'price' => 59.99,
+            'sale_price' => null,
+            'image' => 'assets/images/templates/medical-1.jpg',
+            'slug' => 'medicare'
+        ],
+        [
+            'id' => 3,
+            'name' => 'ShopMaster',
+            'category' => 'E-commerce',
+            'price' => 69.99,
+            'sale_price' => 54.99,
+            'image' => 'assets/images/templates/ecommerce-1.jpg',
+            'slug' => 'shopmaster'
+        ],
+        [
+            'id' => 4,
+            'name' => 'EduLearn',
+            'category' => 'School & Education',
+            'price' => 44.99,
+            'sale_price' => null,
+            'image' => 'assets/images/templates/education-1.jpg',
+            'slug' => 'edulearn'
+        ]
+    ];
+}
+
+// Get template categories from database with template counts
+$categoriesQuery = "SELECT c.category_id, c.category_slug, ct.category_name,
+                   (SELECT COUNT(*) FROM templates WHERE category_id = c.category_id AND is_active = 1) as template_count
+                   FROM categories c
+                   LEFT JOIN category_translations ct ON c.category_id = ct.category_id AND ct.language_code = 'en'
+                   WHERE c.is_active = 1
+                   ORDER BY c.category_order, ct.category_name";
+$categoriesResult = $db->query($categoriesQuery);
+
+// Prepare categories array
+$categories = [];
+while ($category = $categoriesResult->fetch_assoc()) {
+    // Determine icon based on category name or slug
+    $icon = 'fas fa-folder'; // Default icon
+    
+    // Map category names to icons
+    $iconMap = [
+        'real estate' => 'fas fa-home',
+        'jobs' => 'fas fa-briefcase',
+        'recruiters' => 'fas fa-briefcase',
+        'matrimonial' => 'fas fa-heart',
+        'medical' => 'fas fa-stethoscope',
+        'doctors' => 'fas fa-stethoscope',
+        'b2b' => 'fas fa-handshake',
+        'ecommerce' => 'fas fa-shopping-cart',
+        'shop' => 'fas fa-shopping-cart',
+        'banking' => 'fas fa-university',
+        'finance' => 'fas fa-university',
+        'health' => 'fas fa-spa',
+        'beauty' => 'fas fa-spa',
+        'food' => 'fas fa-utensils',
+        'beverage' => 'fas fa-utensils',
+        'education' => 'fas fa-graduation-cap',
+        'school' => 'fas fa-graduation-cap',
+        'tours' => 'fas fa-plane',
+        'travel' => 'fas fa-plane',
+        'b2c' => 'fas fa-store'
+    ];
+    
+    $categoryNameLower = strtolower($category['category_name']);
+    foreach ($iconMap as $keyword => $iconClass) {
+        if (strpos($categoryNameLower, $keyword) !== false) {
+            $icon = $iconClass;
+            break;
+        }
+    }
+    
+    $categories[] = [
+        'id' => $category['category_slug'],
+        'name' => $category['category_name'],
+        'icon' => $icon,
+        'count' => $category['template_count']
+    ];
+}
+
+// If no categories found, use some defaults
+if (empty($categories)) {
+    $categories = [
+        [
+            'id' => 'real-estate',
+            'name' => 'Real Estate',
+            'icon' => 'fas fa-home',
+            'count' => 12
+        ],
+        [
+            'id' => 'jobs-recruiters',
+            'name' => 'Jobs & Recruiters',
+            'icon' => 'fas fa-briefcase',
+            'count' => 8
+        ],
+        [
+            'id' => 'matrimonial',
+            'name' => 'Matrimonial',
+            'icon' => 'fas fa-heart',
+            'count' => 6
+        ],
+        [
+            'id' => 'medical-doctors',
+            'name' => 'Medical & Doctors',
+            'icon' => 'fas fa-stethoscope',
+            'count' => 10
+        ],
+        [
+            'id' => 'ecommerce',
+            'name' => 'E-commerce',
+            'icon' => 'fas fa-shopping-cart',
+            'count' => 15
+        ],
+        [
+            'id' => 'education',
+            'name' => 'School & Education',
+            'icon' => 'fas fa-graduation-cap',
+            'count' => 13
+        ]
+    ];
+}
 
 // Include header
 include_once 'includes/header.php';
@@ -234,16 +282,16 @@ include_once 'includes/header.php';
                             </div>
                         </div>
                         <div class="template-category"><?php echo $template['category']; ?></div>
-                        <div class="template-actions">
-                            <a href="template-details.php?id=<?php echo $template['id']; ?>" class="add-to-cart-btn">View Details</a>
-                            <a href="cart.php?action=add&id=<?php echo $template['id']; ?>" class="details-btn">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M9 20a1 1 0 1 1-2 0a1 1 0 0 1 2 0z"></path>
-                                    <path d="M20 20a1 1 0 1 1-2 0a1 1 0 0 1 2 0z"></path>
-                                    <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
-                                </svg>
-                            </a>
-                        </div>
+                                                    <div class="template-actions">
+                                <a href="template-details.php?id=<?php echo $template['id']; ?>&slug=<?php echo $template['slug'] ?? ''; ?>" class="add-to-cart-btn">View Details</a>
+                                <a href="cart.php?action=add&id=<?php echo $template['id']; ?>" class="details-btn">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M9 20a1 1 0 1 1-2 0a1 1 0 0 1 2 0z"></path>
+                                        <path d="M20 20a1 1 0 1 1-2 0a1 1 0 0 1 2 0z"></path>
+                                        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                                    </svg>
+                                </a>
+                            </div>
                     </div>
                 </div>
             <?php endforeach; ?>

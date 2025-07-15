@@ -2,36 +2,34 @@
 // Define base path
 define('STORE_PATH', dirname(__FILE__));
 
+// Start session
+session_start();
+
 // Include common functions and database
 require_once 'includes/functions.php';
 require_once 'includes/database.php';
 
-// Initialize database
+// Initialize database connection
 $db = new Database();
 
-// Start or resume session
-session_start();
+// Get redirect URL
+$redirect = isset($_GET['redirect']) ? $_GET['redirect'] : 'index.php';
+
+// Clear remember me token if exists
+if (isset($_SESSION['user_id'])) {
+    $db->query("UPDATE users SET remember_token = NULL WHERE user_id = {$_SESSION['user_id']}");
+    setcookie('remember_token', '', time() - 3600, '/', '', true, true);
+}
 
 // Clear all session variables
 $_SESSION = array();
 
-// Delete the remember me cookie if it exists
-if (isset($_COOKIE['remember_token'])) {
-    setcookie('remember_token', '', time() - 3600, '/');
-}
-
 // Destroy the session
 session_destroy();
 
-// Get redirect URL if set
-$redirect = isset($_GET['redirect']) ? $_GET['redirect'] : 'index.php';
-
-// Redirect to the specified page
+// Redirect to login page
 header('Location: ' . $redirect);
 exit();
-
-// Get redirect URL if set
-$redirect = isset($_GET['redirect']) ? $_GET['redirect'] : 'index.php';
 ?>
 <!DOCTYPE html>
 <html lang="en">

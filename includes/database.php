@@ -9,10 +9,16 @@ class Database {
      * Constructor
      */
     public function __construct() {
-        $host = 'localhost';
-        $username = 'u277468165_neowebxstore';
-        $password = 'Milk@sdk14';
-        $database = 'u277468165_neowebxstore';
+        // Include configuration if not already included
+        if (!defined('DB_HOST')) {
+            require_once __DIR__ . '/config.php';
+        }
+        
+        // Get database credentials from config
+        $host = DB_HOST;
+        $username = DB_USERNAME;
+        $password = DB_PASSWORD;
+        $database = DB_DATABASE;
         
         // Create connection
         $this->conn = new mysqli($host, $username, $password, $database);
